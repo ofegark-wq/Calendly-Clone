@@ -25,7 +25,15 @@ export async function updateSession(request: NextRequest) {
 
   // Keep this call right after createServerClient, with nothing in between,
   // so the refreshed session cookie always gets set before other code runs.
-  await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
 
   return supabaseResponse
 }
