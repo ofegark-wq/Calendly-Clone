@@ -30,6 +30,9 @@ export default async function DashboardPage() {
       <Link href="/dashboard/event-types" className="underline">
         Manage appointment types
       </Link>
+      <Link href="/dashboard/availability" className="underline">
+        Manage weekly availability
+      </Link>
       <form action={signOutAction}>
         <button
           type="submit"
