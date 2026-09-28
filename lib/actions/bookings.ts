@@ -1,6 +1,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 
 export type CreateBookingInput = {
@@ -47,4 +48,23 @@ export async function createBookingAction(
   })
 
   redirect(`/${input.username}/${input.slug}/confirmed?${params.toString()}`)
+}
+
+export async function cancelBookingAction(formData: FormData): Promise<void> {
+  const id = String(formData.get('id') ?? '')
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  await supabase
+    .from('bookings')
+    .update({ status: 'cancelled' })
+    .eq('id', id)
+    .eq('host_id', user!.id)
+
+  revalidatePath('/dashboard/bookings')
+  revalidatePath('/dashboard')
+  redirect('/dashboard/bookings')
 }
