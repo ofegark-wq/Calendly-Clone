@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { EventTypeForm } from '../../event-type-form'
 import { updateEventTypeAction } from '@/lib/actions/event-types'
 
+export const dynamic = 'force-dynamic'
+
 export default async function EditEventTypePage({
   params,
 }: {

@@ -4,6 +4,8 @@ import { deleteEventTypeAction } from '@/lib/actions/event-types'
 import { CopyLinkButton } from './copy-link-button'
 import { DeleteButton } from './delete-button'
 
+export const dynamic = 'force-dynamic'
+
 const ERROR_MESSAGES: Record<string, string> = {
   'has-bookings':
     'That type has existing bookings, so it can only be deactivated, not deleted.',

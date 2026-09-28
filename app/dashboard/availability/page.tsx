@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { AvailabilityForm, type DayState } from './availability-form'
 
+export const dynamic = 'force-dynamic'
+
 // Display order is Monday -> Sunday, but the stored weekday values follow
 // JS Date.getDay()'s convention (0 = Sunday, 1 = Monday, ...), so Phase 5's
 // slot generation can look up a day's rows without any remapping.

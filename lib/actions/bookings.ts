@@ -54,15 +54,7 @@ export async function cancelBookingAction(formData: FormData): Promise<void> {
   const id = String(formData.get('id') ?? '')
 
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  await supabase
-    .from('bookings')
-    .update({ status: 'cancelled' })
-    .eq('id', id)
-    .eq('host_id', user!.id)
+  await supabase.rpc('cancel_booking', { p_booking_id: id })
 
   revalidatePath('/dashboard/bookings')
   revalidatePath('/dashboard')
