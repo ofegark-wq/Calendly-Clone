@@ -27,6 +27,9 @@ export default async function DashboardPage() {
           {publicPath}
         </Link>
       </p>
+      <Link href="/dashboard/event-types" className="underline">
+        Manage appointment types
+      </Link>
       <form action={signOutAction}>
         <button
           type="submit"
