@@ -62,6 +62,9 @@ export default async function BookingPage({
 
   return (
     <BookingClient
+      username={username}
+      slug={slug}
+      eventTypeId={eventType.id}
       eventTypeTitle={eventType.title}
       eventTypeDescription={eventType.description}
       slots={slots}

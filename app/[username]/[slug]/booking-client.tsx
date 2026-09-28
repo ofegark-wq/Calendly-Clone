@@ -1,7 +1,9 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import type { Slot } from '@/lib/slots'
+import { createBookingAction } from '@/lib/actions/bookings'
 
 function formatDateLabel(iso: string): string {
   return new Date(iso).toLocaleDateString('en-GB', {
@@ -27,14 +29,22 @@ function dateKey(iso: string): string {
 }
 
 export function BookingClient({
+  username,
+  slug,
+  eventTypeId,
   eventTypeTitle,
   eventTypeDescription,
   slots,
 }: {
+  username: string
+  slug: string
+  eventTypeId: string
   eventTypeTitle: string
   eventTypeDescription: string | null
   slots: Slot[]
 }) {
+  const router = useRouter()
+
   const days = useMemo(() => {
     const map = new Map<string, Slot[]>()
     for (const slot of slots) {
@@ -48,8 +58,38 @@ export function BookingClient({
 
   const [selectedDay, setSelectedDay] = useState<string | null>(days[0]?.[0] ?? null)
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null)
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
 
   const selectedDaySlots = days.find(([key]) => key === selectedDay)?.[1] ?? []
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault()
+    if (!selectedSlot) return
+
+    setError(null)
+    setSubmitting(true)
+    try {
+      const result = await createBookingAction({
+        eventTypeId,
+        startAt: selectedSlot.startAt,
+        name,
+        email,
+        username,
+        slug,
+        eventTypeTitle,
+      })
+      if (result?.error) {
+        setError(result.error)
+        setSelectedSlot(null)
+        router.refresh()
+      }
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="mx-auto flex min-h-screen max-w-xl flex-col gap-6 px-4 py-12 font-sans">
@@ -59,6 +99,12 @@ export function BookingClient({
           <p className="mt-1 text-sm text-zinc-500">{eventTypeDescription}</p>
         )}
       </div>
+
+      {error && (
+        <p className="text-sm text-red-600" role="alert">
+          {error}
+        </p>
+      )}
 
       {days.length === 0 ? (
         <p className="text-sm text-zinc-500">No open times in the next two weeks.</p>
@@ -102,7 +148,7 @@ export function BookingClient({
           </div>
 
           {selectedSlot && (
-            <form className="flex max-w-sm flex-col gap-4">
+            <form onSubmit={handleSubmit} className="flex max-w-sm flex-col gap-4">
               <p className="text-sm text-zinc-500">
                 {formatDateLabel(selectedSlot.startAt)} at{' '}
                 {formatTimeLabel(selectedSlot.startAt)} (Africa/Lagos)
@@ -116,6 +162,8 @@ export function BookingClient({
                   name="name"
                   type="text"
                   required
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
                   className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-black"
                 />
               </div>
@@ -128,16 +176,17 @@ export function BookingClient({
                   name="email"
                   type="email"
                   required
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
                   className="rounded border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-black"
                 />
               </div>
               <button
                 type="submit"
-                disabled
-                title="Booking submission is wired up in the next phase"
-                className="rounded bg-black px-4 py-2 text-white opacity-50 dark:bg-white dark:text-black"
+                disabled={submitting}
+                className="rounded bg-black px-4 py-2 text-white disabled:opacity-50 dark:bg-white dark:text-black"
               >
-                Book (coming in the next phase)
+                {submitting ? 'Booking...' : 'Book'}
               </button>
             </form>
           )}
