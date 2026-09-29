@@ -20,6 +20,8 @@ export function DashboardNav() {
     return item.exact ? pathname === item.href : pathname.startsWith(item.href)
   }
 
+  const activeItem = NAV_ITEMS.find((item) => isActive(item)) ?? NAV_ITEMS[0]
+
   return (
     <nav className="sticky top-0 z-10 border-b border-zinc-200 bg-zinc-50/95 backdrop-blur dark:border-zinc-800 dark:bg-black/95">
       <div className="mx-auto flex max-w-2xl items-center justify-between px-4">
@@ -49,24 +51,29 @@ export function DashboardNav() {
           </button>
         </form>
 
-        {/* Mobile: hamburger button that opens a vertical menu */}
-        <button
-          type="button"
-          onClick={() => setOpen((value) => !value)}
-          aria-label={open ? 'Close menu' : 'Open menu'}
-          aria-expanded={open}
-          className="py-4 text-zinc-600 md:hidden dark:text-zinc-300"
-        >
-          {open ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
-            </svg>
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
-            </svg>
-          )}
-        </button>
+        {/* Mobile: hamburger button + current page name, opens a vertical menu */}
+        <div className="flex items-center gap-3 md:hidden">
+          <button
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            className="py-4 text-zinc-600 dark:text-zinc-300"
+          >
+            {open ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+              </svg>
+            )}
+          </button>
+          <span className="text-sm font-medium text-black dark:text-white">
+            {activeItem.label}
+          </span>
+        </div>
       </div>
 
       {open && (
