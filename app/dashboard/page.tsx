@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { signOutAction } from '@/lib/actions/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -64,18 +63,6 @@ export default async function DashboardPage() {
         </Link>
       </p>
 
-      <div className="flex gap-4 text-sm">
-        <Link href="/dashboard/event-types" className="underline">
-          Event types
-        </Link>
-        <Link href="/dashboard/availability" className="underline">
-          Availability
-        </Link>
-        <Link href="/dashboard/bookings" className="underline">
-          Bookings
-        </Link>
-      </div>
-
       <div>
         <h2 className="text-lg font-medium">Next 5 upcoming bookings</h2>
         {(!upcomingBookings || upcomingBookings.length === 0) && (
@@ -96,15 +83,6 @@ export default async function DashboardPage() {
           ))}
         </ul>
       </div>
-
-      <form action={signOutAction}>
-        <button
-          type="submit"
-          className="rounded border border-zinc-300 px-4 py-2 dark:border-zinc-700"
-        >
-          Log out
-        </button>
-      </form>
     </div>
   )
 }
